@@ -32,10 +32,15 @@ const Dashboard: React.FC = () => {
   const { addToCart } = useCart();
 
   const [products, setProducts] = useState<Product[]>([]);
+  console.log("🚀 ~ file: index.tsx ~ line 35 ~ products", products)
 
   useEffect(() => {
     async function loadProducts(): Promise<void> {
       // TODO
+      const response = await api.get('/products');
+      const responseData: Product[] = response.data;
+
+      setProducts(responseData);
     }
 
     loadProducts();
