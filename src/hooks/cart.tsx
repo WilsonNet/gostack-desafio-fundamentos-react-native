@@ -7,6 +7,7 @@ import React, {
 } from 'react';
 
 import AsyncStorage from '@react-native-community/async-storage';
+import { resolveProjectReferencePath } from 'typescript';
 
 interface Product {
   id: string;
@@ -27,7 +28,7 @@ const CartContext = createContext<CartContext | null>(null);
 
 const CartProvider: React.FC = ({ children }) => {
   const [products, setProducts] = useState<Product[]>([]);
-  console.log("🚀 ~ file: cart.tsx ~ line 30 ~ products", products)
+  console.log('🚀 ~ file: cart.tsx ~ line 30 ~ products', products);
 
   useEffect(() => {
     // AsyncStorage.clear();
@@ -35,10 +36,6 @@ const CartProvider: React.FC = ({ children }) => {
       // TODO LOAD ITEMS FROM ASYNC STORAGE
       const storageResponse = await AsyncStorage.getItem(
         '@GoMarketplace:products',
-      );
-      console.log(
-        '🚀 ~ file: cart.tsx ~ line 37 ~ loadProducts ~ storageResponse ',
-        storageResponse,
       );
 
       if (storageResponse) {
@@ -55,8 +52,19 @@ const CartProvider: React.FC = ({ children }) => {
   const addToCart = useCallback(
     async (product: Omit<Product, 'quantity'>) => {
       try {
-        const newProduct: Product = { ...product, quantity: 1 };
-        const newProducts = [...products, newProduct];
+        let isProductAlreadyOnCart = false;
+        const mappedProducts = products.map(element => {
+          if (element.id === product.id) {
+            isProductAlreadyOnCart = true;
+            return { ...element, quantity: element.quantity + 1 };
+          }
+          return element;
+        });
+
+        const newProducts = isProductAlreadyOnCart
+          ? mappedProducts
+          : [...products, { ...product, quantity: 1 }];
+
         await AsyncStorage.setItem(
           '@GoMarketplace:products',
           JSON.stringify(newProducts),
