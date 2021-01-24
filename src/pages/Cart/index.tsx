@@ -37,7 +37,6 @@ interface Product {
 
 const Cart: React.FC = () => {
   const { increment, decrement, products } = useCart();
-  console.log('🚀 ~ file: index.tsx ~ line 40 ~  products ', products);
 
   function handleIncrement(id: string): void {
     increment(id);

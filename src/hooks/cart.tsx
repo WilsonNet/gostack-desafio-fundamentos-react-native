@@ -28,7 +28,6 @@ const CartContext = createContext<CartContext | null>(null);
 
 const CartProvider: React.FC = ({ children }) => {
   const [products, setProducts] = useState<Product[]>([]);
-  console.log('🚀 ~ file: cart.tsx ~ line 30 ~ products', products);
 
   useEffect(() => {
     // AsyncStorage.clear();
@@ -51,28 +50,24 @@ const CartProvider: React.FC = ({ children }) => {
 
   const addToCart = useCallback(
     async (product: Omit<Product, 'quantity'>) => {
-      try {
-        let isProductAlreadyOnCart = false;
-        const mappedProducts = products.map(element => {
-          if (element.id === product.id) {
-            isProductAlreadyOnCart = true;
-            return { ...element, quantity: element.quantity + 1 };
-          }
-          return element;
-        });
+      let isProductAlreadyOnCart = false;
+      const mappedProducts = products.map(element => {
+        if (element.id === product.id) {
+          isProductAlreadyOnCart = true;
+          return { ...element, quantity: element.quantity + 1 };
+        }
+        return element;
+      });
 
-        const newProducts = isProductAlreadyOnCart
-          ? mappedProducts
-          : [...products, { ...product, quantity: 1 }];
+      const newProducts = isProductAlreadyOnCart
+        ? mappedProducts
+        : [...products, { ...product, quantity: 1 }];
 
-        await AsyncStorage.setItem(
-          '@GoMarketplace:products',
-          JSON.stringify(newProducts),
-        );
-        setProducts(newProducts);
-      } catch (error) {
-        console.error(error);
-      }
+      await AsyncStorage.setItem(
+        '@GoMarketplace:products',
+        JSON.stringify(newProducts),
+      );
+      setProducts(newProducts);
     },
     [products],
   );
