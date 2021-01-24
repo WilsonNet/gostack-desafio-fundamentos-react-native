@@ -27,12 +27,18 @@ const CartContext = createContext<CartContext | null>(null);
 
 const CartProvider: React.FC = ({ children }) => {
   const [products, setProducts] = useState<Product[]>([]);
+  console.log("🚀 ~ file: cart.tsx ~ line 30 ~ products", products)
 
   useEffect(() => {
+    // AsyncStorage.clear();
     async function loadProducts(): Promise<void> {
       // TODO LOAD ITEMS FROM ASYNC STORAGE
       const storageResponse = await AsyncStorage.getItem(
         '@GoMarketplace:products',
+      );
+      console.log(
+        '🚀 ~ file: cart.tsx ~ line 37 ~ loadProducts ~ storageResponse ',
+        storageResponse,
       );
 
       if (storageResponse) {
@@ -48,13 +54,17 @@ const CartProvider: React.FC = ({ children }) => {
 
   const addToCart = useCallback(
     async (product: Omit<Product, 'quantity'>) => {
-      const newProduct: Product = { ...product, quantity: 1 };
-      const newProducts = [...products, newProduct];
-      await AsyncStorage.setItem(
-        '@GoMarketplace:products',
-        JSON.stringify(newProducts),
-      );
-      setProducts(newProducts);
+      try {
+        const newProduct: Product = { ...product, quantity: 1 };
+        const newProducts = [...products, newProduct];
+        await AsyncStorage.setItem(
+          '@GoMarketplace:products',
+          JSON.stringify(newProducts),
+        );
+        setProducts(newProducts);
+      } catch (error) {
+        console.error(error);
+      }
     },
     [products],
   );
@@ -73,7 +83,7 @@ const CartProvider: React.FC = ({ children }) => {
   );
 
   return (
-    <CartContext.Provider value={{ value, addToCart }}>
+    <CartContext.Provider value={{ value, products, addToCart }}>
       {children}
     </CartContext.Provider>
   );
