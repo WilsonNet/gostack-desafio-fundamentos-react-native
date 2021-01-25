@@ -30,16 +30,19 @@ const CartProvider: React.FC = ({ children }) => {
   const [products, setProducts] = useState<Product[]>([]);
 
   useEffect(() => {
-    // AsyncStorage.clear();
     async function loadProducts(): Promise<void> {
-      // TODO LOAD ITEMS FROM ASYNC STORAGE
       const storageResponse = await AsyncStorage.getItem(
         '@GoMarketplace:products',
       );
-
       if (storageResponse) {
-        const productsResponse: Product[] = JSON.parse(storageResponse);
+        const productsResponse: Product[] = [...JSON.parse(storageResponse)];
+        console.log(typeof productsResponse);
+        console.log(
+          '🚀 ~ file: cart.tsx ~ line 44 ~ loadProducts ~  productsResponse',
+          productsResponse,
+        );
         setProducts(productsResponse);
+        return;
       }
 
       setProducts([] as Product[]);

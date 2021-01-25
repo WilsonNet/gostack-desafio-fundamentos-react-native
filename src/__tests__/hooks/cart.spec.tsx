@@ -138,7 +138,7 @@ describe('Cart Context', () => {
   });
 
   it('should load products from AsyncStorage', async () => {
-    mockedAsyncStorage.getItem.mockReturnValue(
+    const xd = mockedAsyncStorage.getItem.mockReturnValue(
       new Promise(resolve =>
         resolve(
           JSON.stringify([
@@ -159,6 +159,8 @@ describe('Cart Context', () => {
         <TestComponent />
       </CartProvider>,
     );
+
+    console.log(mockedAsyncStorage.getItem);
 
     await wait(() => expect(getByText('Test product')).toBeTruthy());
 
